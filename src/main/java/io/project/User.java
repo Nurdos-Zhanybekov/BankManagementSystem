@@ -11,6 +11,10 @@ public class User {
         this.login = login;
     }
 
+    public User(String login){
+        this.login = login;
+    }
+
     public String getLogin() {
         return login;
     }
