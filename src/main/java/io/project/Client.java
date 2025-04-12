@@ -2,20 +2,13 @@ package io.project;
 
 public class Client extends User{
     private double salary;
+    private double credit;
     int id;
 
-    public Client(String account_type, String login, String password, double salary) {
-        super(account_type, password, login);
+    public Client(int id, String account_type, String login, String password, double salary, double credit) {
+        super(id, account_type, login, password);
         this.salary = salary;
-    }
-
-    public Client(String account_type, String login, String password){
-        super(account_type, login, password);
-    }
-
-    public Client(int id, String login){
-        super(login);
-        this.id = id;
+        this.credit = credit;
     }
 
     public double getSalary() {
@@ -32,5 +25,13 @@ public class Client extends User{
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public double getCredit() {
+        return credit;
+    }
+
+    public void setCredit(double credit) {
+        this.credit = credit;
     }
 }

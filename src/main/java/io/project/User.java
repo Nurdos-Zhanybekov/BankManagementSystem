@@ -4,15 +4,13 @@ public class User {
     private String account_type;
     private String password;
     private String login;
+    private int id;
 
-    public User(String account_type, String login, String password) {
+    public User(int id, String account_type, String login, String password) {
         this.account_type = account_type;
         this.password = password;
         this.login = login;
-    }
-
-    public User(String login){
-        this.login = login;
+        this.id = id;
     }
 
     public String getLogin() {
@@ -36,5 +34,13 @@ public class User {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

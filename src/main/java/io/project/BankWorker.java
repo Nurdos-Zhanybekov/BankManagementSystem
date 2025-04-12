@@ -3,13 +3,9 @@ package io.project;
 public class BankWorker extends User{
     String position;
 
-    public BankWorker(String account_type, String login, String password, String position) {
-        super(account_type, login, password);
+    public BankWorker(int id, String account_type, String login, String password, String position) {
+        super(id, account_type, login, password);
         this.position = position;
-    }
-
-    public BankWorker(String account_type, String login, String password) {
-        super(account_type, login, password);
     }
 
     public String getPosition() {
