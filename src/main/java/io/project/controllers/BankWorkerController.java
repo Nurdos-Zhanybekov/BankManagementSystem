@@ -1,7 +1,5 @@
 package io.project.controllers;
 
-import io.project.Authentication;
-import io.project.BankWorker;
 import io.project.Client;
 import io.project.DAO.BankWorkerDAO;
 import io.project.User;
