@@ -1,6 +1,7 @@
 package io.project.controllers;
 
 import io.project.Client;
+import io.project.CreditLoan;
 import io.project.DAO.BankWorkerDAO;
 import io.project.User;
 
@@ -10,6 +11,7 @@ import java.util.Scanner;
 public class BankWorkerController {
     private final BankWorkerDAO bankWorkerDAO = new BankWorkerDAO();
     private final Scanner scanner = new Scanner(System.in);
+    private final CreditLoan creditLoan = new CreditLoan();
 
     public void showMenu(User user){
         System.out.println("Welcome " + user.getLogin());
@@ -52,21 +54,36 @@ public class BankWorkerController {
                 break;
             case 5:
                 System.out.println("Enter client name: ");
-                String new_client_name = scanner.nextLine();
+                String enter_client_name = scanner.nextLine();
                 System.out.println("Enter client salary: ");
-                double client_salary = scanner.nextDouble();
+                double enter_client_salary = scanner.nextDouble();
                 scanner.nextLine();
                 System.out.println("Enter property type: ");
-                String client_property_type = scanner.nextLine();
+                String enter_client_property_type = scanner.nextLine();
                 System.out.println("Enter property price: ");
-                double client_property_price = scanner.nextDouble();
+                double enter_client_property_price = scanner.nextDouble();
                 scanner.nextLine();
                 System.out.println("Enter credit period");
-                int credit_period = scanner.nextInt();
+                int enter_client_credit_period = scanner.nextInt();
                 scanner.nextLine();
 
-                bankWorkerDAO.add_new_client(new_client_name, client_salary, client_property_type, client_property_price, credit_period);
+                Double credit_sum = creditLoan.count_credit_sum(enter_client_property_type, enter_client_property_price, enter_client_credit_period, enter_client_salary);
+
+                if(credit_sum == null){
+                    System.out.println("Client doesn't have enough income to get credit");
+                    return;
+                }
+
+                bankWorkerDAO.add_new_client(enter_client_name, enter_client_salary, enter_client_property_type, enter_client_property_price, enter_client_credit_period, credit_sum);
                 System.out.println("Client added successfully");
+            case 6:
+                System.out.println("Enter client name: ");
+                String client_name = scanner.nextLine();
+                bankWorkerDAO.show_credit_history(client_name);
+                break;
+            case 7:
+                System.out.println("Exiting");
+                System.exit(1);
         }
     }
 }

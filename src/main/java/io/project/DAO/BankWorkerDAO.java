@@ -1,7 +1,6 @@
 package io.project.DAO;
 
 import io.project.Client;
-import io.project.CreditCounter;
 import io.project.config.DBConnection;
 
 import java.sql.PreparedStatement;
@@ -11,10 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BankWorkerDAO {
-    CreditCounter creditCounter = new CreditCounter();
 
     public List<Client> show_client_list(){
-        String list_clients = "select * from client";
+        String list_clients = "select * from clients";
         List<Client> clients = new ArrayList<>();
 
         try(PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(list_clients)) {
@@ -33,7 +31,7 @@ public class BankWorkerDAO {
     }
 
     public Client find_client(String login){
-        String get_client = "select * from client where name = ?";
+        String get_client = "select * from clients where name = ?";
 
         try(PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(get_client)) {
             preparedStatement.setString(1, login);
@@ -77,9 +75,8 @@ public class BankWorkerDAO {
         return null;
     }
 
-    public void add_new_client(String name, double salary, String property_type, double property_price, int credit_period){
-        String insert_client = "insert into client (name, salary, property_type, property_price, credit_period, credit_sum) values (?, ?, ?, ?, ?, ?)";
-        double credit_sum = creditCounter.count_credit_sum(property_type, property_price, credit_period);
+    public void add_new_client(String name, double salary, String property_type, double property_price, int credit_period, Double credit_sum){
+        String insert_client = "insert into clients (name, salary, property_type, property_price, credit_period, credit_sum) values (?, ?, ?, ?, ?, ?)";
 
         try(PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(insert_client)) {
             preparedStatement.setString(1, name);
@@ -89,6 +86,33 @@ public class BankWorkerDAO {
             preparedStatement.setInt(5, credit_period);
             preparedStatement.setDouble(6, credit_sum);
             preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void show_credit_history(String name){
+        String get_client_credit_history = "select id, name, property_type, credit_sum from clients where name = ?";
+        try(PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(get_client_credit_history)) {
+            preparedStatement.setString(1, name);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            boolean client_found = false;
+            double total_credit = 0;
+            while(resultSet.next()){
+                if(!client_found){
+                    System.out.println(resultSet.getInt("id") + ". " + resultSet.getString("name"));
+                    System.out.print("Credit: ");
+                    client_found = true;
+                }
+
+                System.out.print(resultSet.getString("property_type") + "(" + resultSet.getDouble("credit_sum") + "), ");
+                total_credit += resultSet.getDouble("credit_sum");
+            }
+
+            System.out.println("Total credit sum: " + total_credit);
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
