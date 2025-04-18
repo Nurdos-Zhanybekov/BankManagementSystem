@@ -1,89 +1,183 @@
 package io.project.controllers;
 
-import io.project.Client;
-import io.project.CreditLoan;
+import io.project.model.Client;
 import io.project.DAO.BankWorkerDAO;
-import io.project.User;
+import io.project.model.User;
+import io.project.service.CreditLoan;
 
+import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
 public class BankWorkerController {
-    private final BankWorkerDAO bankWorkerDAO = new BankWorkerDAO();
+    private final BankWorkerDAO bankWorkerDao = new BankWorkerDAO();
     private final Scanner scanner = new Scanner(System.in);
     private final CreditLoan creditLoan = new CreditLoan();
 
-    public void showMenu(User user){
+    public void showMenu(User user) {
         System.out.println("Welcome " + user.getLogin());
-        System.out.println("Please choose command: ");
+        boolean finished = false;
+        while(!finished) {
+            try {
+                System.out.println("Please choose command: ");
+                System.out.println("1. Show clients list");
+                System.out.println("2. Find client");
+                System.out.println("3. Show client with maximum credit");
+                System.out.println("4. Show client with minimum credit");
+                System.out.println("5. Add client");
+                System.out.println("6. Show credit history");
+                System.out.println("7. Exit");
+                int choose = scanner.nextInt();
 
-        System.out.println("1. Show clients list");
-        System.out.println("2. Find client");
-        System.out.println("3. Show client with maximum credit");
-        System.out.println("4. Show client with minimum credit");
-        System.out.println("5. Add client");
-        System.out.println("6. Show credit history");
-        System.out.println("7. Exit");
+                scanner.nextLine();
+                int enter_response;
+                int answer_no = 2;
 
-        int choose = scanner.nextInt();
-        scanner.nextLine();
-        switch (choose){
-            case 1:
-                List<Client> clients = bankWorkerDAO.show_client_list();
-                for(Client client : clients){
-                    System.out.println(client.getId() + ". " + client.getLogin());
+                List<String> apartments;
+                List<Double> creditAmounts;
+
+                switch (choose) {
+                    case 1:
+                        List<Client> clients = bankWorkerDao.getClientList();
+
+                        for (Client client : clients) {
+                            System.out.println(client.getId() + ". " + client.getName());
+                        }
+
+                        System.out.println("Do you wish to continue: ");
+                        System.out.println("1.Yes");
+                        System.out.println("2.No");
+                        enter_response = scanner.nextInt();
+                        scanner.nextLine();
+
+                        if(enter_response == answer_no){
+                            finished = true;
+                        }
+                        break;
+                    case 2:
+                        System.out.println("Please enter name of the client: ");
+                        String enteredLogin = scanner.nextLine();
+                        apartments = new ArrayList<>();
+                        creditAmounts = new ArrayList<>();
+                        Client searchedClient = bankWorkerDao.findClient(enteredLogin, apartments, creditAmounts);
+                        System.out.println(searchedClient.getId() + ". " + searchedClient.getLogin());
+                        System.out.println("Salary: " + searchedClient.getSalary());
+                        System.out.println("Credits: ");
+
+                        for (int i = 0; i < apartments.size(); i++) {
+                            System.out.println((i + 1) + ". " + apartments.get(i) + "(" + creditAmounts.get(i) + "$)");
+                        }
+
+                        System.out.println("Do you wish to continue: ");
+                        System.out.println("1.Yes");
+                        System.out.println("2.No");
+                        enter_response = scanner.nextInt();
+                        scanner.nextLine();
+
+                        if(enter_response == answer_no){
+                            finished = true;
+                        }
+                        break;
+                    case 3:
+                        Client maxCreditClient = bankWorkerDao.getMaxCreditClient();
+                        System.out.println(maxCreditClient.getId() + ". " + maxCreditClient.getLogin());
+                        System.out.println("Credit amount: " + maxCreditClient.getCreditAmount());
+
+                        System.out.println("Do you wish to continue: ");
+                        System.out.println("1.Yes");
+                        System.out.println("2.No");
+                        enter_response = scanner.nextInt();
+                        scanner.nextLine();
+
+                        if(enter_response == answer_no){
+                            finished = true;
+                        }
+                        break;
+                    case 4:
+                        Client minCreditClient = bankWorkerDao.getMinCreditClient();
+                        System.out.println(minCreditClient.getId() + ". " + minCreditClient.getLogin());
+                        System.out.println("Credit amount: " + minCreditClient.getCreditAmount());
+
+                        System.out.println("Do you wish to continue: ");
+                        System.out.println("1.Yes");
+                        System.out.println("2.No");
+                        enter_response = scanner.nextInt();
+                        scanner.nextLine();
+
+                        if(enter_response == answer_no){
+                            finished = true;
+                        }
+                        break;
+                    case 5:
+                        System.out.println("Enter client name: ");
+                        String clientName = scanner.nextLine();
+                        System.out.println("Enter client salary: ");
+                        double clientSalary = scanner.nextDouble();
+                        scanner.nextLine();
+                        System.out.println("Enter property type: ");
+                        String propertyType = scanner.nextLine();
+                        System.out.println("Enter property price: ");
+                        double propertyPrice = scanner.nextDouble();
+                        scanner.nextLine();
+                        System.out.println("Enter credit period: ");
+                        int creditPeriod = scanner.nextInt();
+                        scanner.nextLine();
+
+                        Double creditSum = creditLoan.countCreditSum(propertyType, propertyPrice, creditPeriod, clientSalary);
+
+                        if (creditSum == null) {
+                            System.out.println("Client doesn't have enough income to get credit");
+                            return;
+                        }
+
+                        bankWorkerDao.addNewClient(clientName, clientSalary, propertyType, propertyPrice, creditPeriod, creditSum);
+                        System.out.println("Client added successfully");
+
+                        System.out.println("Do you wish to continue: ");
+                        System.out.println("1.Yes");
+                        System.out.println("2.No");
+                        enter_response = scanner.nextInt();
+                        scanner.nextLine();
+
+                        if(enter_response == answer_no){
+                            finished = true;
+                        }
+                        break;
+                    case 6:
+                        System.out.println("Enter client name: ");
+                        String creditHistoryName = scanner.nextLine();
+                        apartments = new ArrayList<>();
+                        creditAmounts = new ArrayList<>();
+                        Client clientCreditHistory = bankWorkerDao.getCreditHistory(creditHistoryName, apartments, creditAmounts);
+                        System.out.println(clientCreditHistory.getId() + ". " + clientCreditHistory.getName());
+                        System.out.println("Credits: ");
+                        for (int i = 0; i < apartments.size(); i++) {
+                            System.out.println((i + 1) + ". " + apartments.get(i) + "(" + creditAmounts.get(i) + "$)");
+                        }
+                        System.out.println("Total sum: " + clientCreditHistory.getTotalCredit());
+
+                        System.out.println("Do you wish to continue: ");
+                        System.out.println("1.Yes");
+                        System.out.println("2.No");
+                        enter_response = scanner.nextInt();
+                        scanner.nextLine();
+
+                        if(enter_response == answer_no){
+                            finished = true;
+                        }
+                        break;
+                    case 7:
+                        System.out.println("Exiting");
+                        finished = true;
+                        break;
+                    default:
+                        System.out.println("Invalid option. Please enter a number between 1 and 7");
                 }
-                break;
-            case 2:
-                System.out.println("Please enter name of the client: ");
-                String enter_login = scanner.nextLine();
-                Client searched_client = bankWorkerDAO.find_client(enter_login);
-                System.out.println(searched_client.getId() + ". " + searched_client.getLogin());
-                System.out.println("Salary: " + searched_client.getSalary());
-                System.out.println("Credit: " + searched_client.getCredit());
-                break;
-            case 3:
-                Client client_max_credit = bankWorkerDAO.get_max_credit_client();
-                System.out.println(client_max_credit.getId() + ". " + client_max_credit.getLogin());
-                System.out.println("Credit amount: " + client_max_credit.getCredit());
-                break;
-            case 4:
-                Client client_min_credit = bankWorkerDAO.get_min_credit_client();
-                System.out.println(client_min_credit.getId() + ". " + client_min_credit.getLogin());
-                System.out.println("Credit amount: " + client_min_credit.getCredit());
-                break;
-            case 5:
-                System.out.println("Enter client name: ");
-                String enter_client_name = scanner.nextLine();
-                System.out.println("Enter client salary: ");
-                double enter_client_salary = scanner.nextDouble();
+            } catch (InputMismatchException e) {
+                System.out.println("Input mismatch. Please enter a number between 1 and 7");
                 scanner.nextLine();
-                System.out.println("Enter property type: ");
-                String enter_client_property_type = scanner.nextLine();
-                System.out.println("Enter property price: ");
-                double enter_client_property_price = scanner.nextDouble();
-                scanner.nextLine();
-                System.out.println("Enter credit period");
-                int enter_client_credit_period = scanner.nextInt();
-                scanner.nextLine();
-
-                Double credit_sum = creditLoan.count_credit_sum(enter_client_property_type, enter_client_property_price, enter_client_credit_period, enter_client_salary);
-
-                if(credit_sum == null){
-                    System.out.println("Client doesn't have enough income to get credit");
-                    return;
-                }
-
-                bankWorkerDAO.add_new_client(enter_client_name, enter_client_salary, enter_client_property_type, enter_client_property_price, enter_client_credit_period, credit_sum);
-                System.out.println("Client added successfully");
-            case 6:
-                System.out.println("Enter client name: ");
-                String client_name = scanner.nextLine();
-                bankWorkerDAO.show_credit_history(client_name);
-                break;
-            case 7:
-                System.out.println("Exiting");
-                System.exit(1);
+            }
         }
     }
 }

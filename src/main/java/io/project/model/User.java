@@ -1,4 +1,4 @@
-package io.project;
+package io.project.model;
 
 public class User {
     private String account_type;
@@ -12,6 +12,8 @@ public class User {
         this.login = login;
         this.id = id;
     }
+
+    public User(){}
 
     public String getLogin() {
         return login;

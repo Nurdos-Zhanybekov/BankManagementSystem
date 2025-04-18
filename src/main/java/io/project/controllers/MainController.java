@@ -1,9 +1,8 @@
 package io.project.controllers;
 
-import io.project.Authentication;
-import io.project.BankWorker;
-import io.project.Client;
-
+import io.project.service.Authentication;
+import io.project.model.BankWorker;
+import io.project.model.Client;
 import java.util.Scanner;
 
 public class MainController {
@@ -14,11 +13,11 @@ public class MainController {
         boolean running = true;
         while(running) {
             System.out.println("Please enter your account type, login and password: ");
-            String enter_account_type = scanner.nextLine();
-            String enter_login = scanner.nextLine();
-            String enter_password = scanner.nextLine();
+            String enterAccountType = scanner.nextLine();
+            String enterLogin = scanner.nextLine();
+            String enterPassword = scanner.nextLine();
 
-            var user = authentication.login(enter_account_type, enter_login, enter_password);
+            var user = authentication.login(enterAccountType, enterLogin, enterPassword);
 
             if (user == null) {
                 System.out.println("User has not been found. Try again");
