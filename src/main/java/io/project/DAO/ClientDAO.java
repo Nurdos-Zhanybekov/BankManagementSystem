@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BankWorkerDAO {
+public class ClientDAO {
 
     public List<Client> getClientList(){
         String listClients = "select * from clients";
@@ -160,5 +160,59 @@ public class BankWorkerDAO {
         }
 
         return null;
+    }
+
+    public Double getBalance(int currency, String login){
+        int som = 1;
+        int dollar = 2;
+        String getBalanceSom = "select balance_som from balance inner join clients on client_login = name where client_login = ?";
+        String getBalanceDollar = "select balance_dollar from balance inner join clients on client_login = name where client_login = ?";
+        if(currency == som){
+            try(PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(getBalanceSom)) {
+                preparedStatement.setString(1, login);
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                if(resultSet.next()){
+                    return resultSet.getDouble("balance_som");
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            } ;
+        }else if (currency == dollar){
+            try(PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(getBalanceDollar)) {
+                preparedStatement.setString(1, login);
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                if(resultSet.next()){
+                    return resultSet.getDouble("balance_dollar");
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return null;
+    }
+
+    public void buyCurrency(int currency, double sum, String login){
+        int som = 1;
+        int dollar = 2;
+        String updateSomBalance = "update balance set balance_som = ? where client_login = ?";
+        String updateDollarBalance = "update balance set balance_dollar = ? where client_login = ?";
+
+        if(currency == som){
+
+            try(PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(updateSomBalance);
+            PreparedStatement preparedStatement1 = DBConnection.getConnection().prepareStatement(updateDollarBalance)) {
+                preparedStatement.setDouble(1, sum);
+                preparedStatement.addBatch(updateDollarBalance);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }else if(currency == dollar){
+
+        }
+
+
     }
 }

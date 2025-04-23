@@ -23,12 +23,14 @@ public class MainController {
                 System.out.println("User has not been found. Try again");
             }
 
-            if (user instanceof Client) {
-                System.out.println("ok");
+            if (user instanceof Client client) {
+                running = false;
+                clearConsole();
+                new ClientController().getMenu(client);
             } else if (user instanceof BankWorker bankWorker) {
                 running = false;
                 clearConsole();
-                new BankWorkerController().showMenu(bankWorker);
+                new BankWorkerController().getMenu(bankWorker);
             }
         }
     }

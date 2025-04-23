@@ -1,7 +1,7 @@
 package io.project.controllers;
 
 import io.project.model.Client;
-import io.project.DAO.BankWorkerDAO;
+import io.project.DAO.ClientDAO;
 import io.project.model.User;
 import io.project.service.CreditLoan;
 
@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Scanner;
 
 public class BankWorkerController {
-    private final BankWorkerDAO bankWorkerDao = new BankWorkerDAO();
+    private final ClientDAO clientDao = new ClientDAO();
     private final Scanner scanner = new Scanner(System.in);
     private final CreditLoan creditLoan = new CreditLoan();
 
-    public void showMenu(User user) {
+    public void getMenu(User user) {
         System.out.println("Welcome " + user.getLogin());
         boolean finished = false;
         while(!finished) {
@@ -39,7 +39,7 @@ public class BankWorkerController {
 
                 switch (choose) {
                     case 1:
-                        List<Client> clients = bankWorkerDao.getClientList();
+                        List<Client> clients = clientDao.getClientList();
 
                         for (Client client : clients) {
                             System.out.println(client.getId() + ". " + client.getName());
@@ -60,7 +60,7 @@ public class BankWorkerController {
                         String enteredLogin = scanner.nextLine();
                         apartments = new ArrayList<>();
                         creditAmounts = new ArrayList<>();
-                        Client searchedClient = bankWorkerDao.findClient(enteredLogin, apartments, creditAmounts);
+                        Client searchedClient = clientDao.findClient(enteredLogin, apartments, creditAmounts);
                         System.out.println(searchedClient.getId() + ". " + searchedClient.getLogin());
                         System.out.println("Salary: " + searchedClient.getSalary());
                         System.out.println("Credits: ");
@@ -80,7 +80,7 @@ public class BankWorkerController {
                         }
                         break;
                     case 3:
-                        Client maxCreditClient = bankWorkerDao.getMaxCreditClient();
+                        Client maxCreditClient = clientDao.getMaxCreditClient();
                         System.out.println(maxCreditClient.getId() + ". " + maxCreditClient.getLogin());
                         System.out.println("Credit amount: " + maxCreditClient.getCreditAmount());
 
@@ -95,7 +95,7 @@ public class BankWorkerController {
                         }
                         break;
                     case 4:
-                        Client minCreditClient = bankWorkerDao.getMinCreditClient();
+                        Client minCreditClient = clientDao.getMinCreditClient();
                         System.out.println(minCreditClient.getId() + ". " + minCreditClient.getLogin());
                         System.out.println("Credit amount: " + minCreditClient.getCreditAmount());
 
@@ -131,7 +131,7 @@ public class BankWorkerController {
                             return;
                         }
 
-                        bankWorkerDao.addNewClient(clientName, clientSalary, propertyType, propertyPrice, creditPeriod, creditSum);
+                        clientDao.addNewClient(clientName, clientSalary, propertyType, propertyPrice, creditPeriod, creditSum);
                         System.out.println("Client added successfully");
 
                         System.out.println("Do you wish to continue: ");
@@ -149,7 +149,7 @@ public class BankWorkerController {
                         String creditHistoryName = scanner.nextLine();
                         apartments = new ArrayList<>();
                         creditAmounts = new ArrayList<>();
-                        Client clientCreditHistory = bankWorkerDao.getCreditHistory(creditHistoryName, apartments, creditAmounts);
+                        Client clientCreditHistory = clientDao.getCreditHistory(creditHistoryName, apartments, creditAmounts);
                         System.out.println(clientCreditHistory.getId() + ". " + clientCreditHistory.getName());
                         System.out.println("Credits: ");
                         for (int i = 0; i < apartments.size(); i++) {

@@ -20,7 +20,9 @@ public class Authentication {
                 preparedStatement.executeQuery();
                 ResultSet resultSet = preparedStatement.getResultSet();
 
-                return new Client(resultSet.getInt("id"), account_type, login, password);
+                if(resultSet.next()) {
+                    return new Client(resultSet.getInt("id"), account_type, login, password);
+                }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }

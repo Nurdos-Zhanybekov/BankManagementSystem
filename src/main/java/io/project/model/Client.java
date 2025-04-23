@@ -13,6 +13,7 @@ public class Client extends User {
 
     public Client(int id, String account_type, String login, String password) {
         super(id, account_type, login, password);
+        this.name = login;
     }
 
     public Client(int id, String name, double salary, String propertyType, double propertyPrice,
@@ -54,14 +55,6 @@ public class Client extends User {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getPropertyType() {
@@ -110,5 +103,13 @@ public class Client extends User {
 
     public void setBalance(double balance) {
         this.balance = balance;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
