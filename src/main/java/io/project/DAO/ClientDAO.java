@@ -177,7 +177,7 @@ public class ClientDAO {
                 }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
-            } ;
+            }
         }else if (currency == dollar){
             try(PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(getBalanceDollar)) {
                 preparedStatement.setString(1, login);
@@ -197,22 +197,91 @@ public class ClientDAO {
     public void buyCurrency(int currency, double sum, String login){
         int som = 1;
         int dollar = 2;
-        String updateSomBalance = "update balance set balance_som = ? where client_login = ?";
-        String updateDollarBalance = "update balance set balance_dollar = ? where client_login = ?";
+        String updateSomBalance;
+        String updateDollarBalance;
 
         if(currency == som){
-
+            updateSomBalance = "update balance set balance_som = balance_som + ? where client_login = ?";
+            updateDollarBalance = "update balance set balance_dollar = balance_dollar - ? where client_login = ?";
             try(PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(updateSomBalance);
             PreparedStatement preparedStatement1 = DBConnection.getConnection().prepareStatement(updateDollarBalance)) {
                 preparedStatement.setDouble(1, sum);
-                preparedStatement.addBatch(updateDollarBalance);
+                preparedStatement.setString(2, login);
+                preparedStatement1.setDouble(1, sum / 87);
+                preparedStatement1.setString(2, login);
+                preparedStatement.executeUpdate();
+                preparedStatement1.executeUpdate();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }else if(currency == dollar){
-
+            updateSomBalance = "update balance set balance_som = balance_som - ? where client_login = ?";
+            updateDollarBalance = "update balance set balance_dollar = balance_dollar + ? where client_login = ?";
+            try(PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(updateSomBalance);
+                PreparedStatement preparedStatement1 = DBConnection.getConnection().prepareStatement(updateDollarBalance)) {
+                preparedStatement.setDouble(1, sum * 87);
+                preparedStatement.setString(2, login);
+                preparedStatement1.setDouble(1, sum);
+                preparedStatement1.setString(2, login);
+                preparedStatement.executeUpdate();
+                preparedStatement1.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
+    }
 
+    public void transferCurrency(int currency, double currencyAmount, String sender, String receiver){
+        int som = 1;
+        int dollar = 2;
+        String transferSom = "update balance set balance_som = balance_som - ? where client_login = ?";
+        String transferDollar = "update balance set balance_dollar = balance_dollar - ? where client_login = ?";
+        String updateReceiverBalanceSom = "update balance set balance_som = balance_som + ? where client_login = ?";
+        String updateReceiverBalanceDollar = "update balance set balance_dollar = balance_dollar + ? where client_login = ?";
 
+        if(currency == som){
+            try(PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(transferSom);
+            PreparedStatement preparedStatement1 = DBConnection.getConnection().prepareStatement(transferDollar);
+            PreparedStatement preparedStatement2 = DBConnection.getConnection().prepareStatement(updateReceiverBalanceSom);
+            PreparedStatement preparedStatement3 = DBConnection.getConnection().prepareStatement(updateReceiverBalanceDollar)){
+                preparedStatement.setDouble(1, currencyAmount);
+                preparedStatement.setString(2, sender);
+                preparedStatement1.setDouble(1, currencyAmount / 87);
+                preparedStatement1.setString(2, sender);
+                preparedStatement2.setDouble(1, currencyAmount);
+                preparedStatement2.setString(2, receiver);
+                preparedStatement3.setDouble(1, currencyAmount / 87);
+                preparedStatement3.setString(2, receiver);
+
+                preparedStatement.executeUpdate();
+                preparedStatement1.executeUpdate();
+                preparedStatement2.executeUpdate();
+                preparedStatement3.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }else if(currency == dollar){
+            try(PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(transferDollar);
+                PreparedStatement preparedStatement1 = DBConnection.getConnection().prepareStatement(transferSom);
+                PreparedStatement preparedStatement2 = DBConnection.getConnection().prepareStatement(updateReceiverBalanceSom);
+                PreparedStatement preparedStatement3 = DBConnection.getConnection().prepareStatement(updateReceiverBalanceDollar)) {
+
+                preparedStatement.setDouble(1, currencyAmount);
+                preparedStatement.setString(2, sender);
+                preparedStatement1.setDouble(1, currencyAmount * 87);
+                preparedStatement1.setString(2, sender);
+                preparedStatement2.setDouble(1, currencyAmount);
+                preparedStatement2.setString(2, receiver);
+                preparedStatement3.setDouble(1, currencyAmount);
+                preparedStatement3.setString(2, receiver);
+
+                preparedStatement.executeUpdate();
+                preparedStatement1.executeUpdate();
+                preparedStatement2.executeUpdate();
+                preparedStatement3.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

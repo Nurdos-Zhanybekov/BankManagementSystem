@@ -32,6 +32,11 @@ public class ClientController {
                 int answer_no = 2;
 
                 int chooseCurrency;
+                int som = 1;
+                int dollar = 2;
+
+                double somAmount;
+                double dollarAmount;
 
                 switch (chooseOption){
                     case 1:
@@ -84,6 +89,49 @@ public class ClientController {
                         System.out.println("1. Som");
                         System.out.println("2. Dollar");
                         chooseCurrency = scanner.nextInt();
+
+                        if(chooseCurrency == som){
+                            System.out.println("Enter amount of soms you want to convert: ");
+                            somAmount = scanner.nextDouble();
+                            scanner.nextLine();
+                            clientDAO.buyCurrency(som, somAmount, client.getName());
+                        }else if(chooseCurrency == dollar){
+                            System.out.println("Enter amount of soms you want to convert: ");
+                            dollarAmount = scanner.nextDouble();
+                            scanner.nextLine();
+                            clientDAO.buyCurrency(dollar, dollarAmount, client.getName());
+                        }
+
+                        System.out.println("Do you wish to continue: ");
+                        System.out.println("1.Yes");
+                        System.out.println("2.No");
+                        enterResponse = scanner.nextInt();
+                        scanner.nextLine();
+
+                        if(enterResponse == answer_no){
+                            finished = true;
+                        }
+                        break;
+                    case 4:
+                        System.out.println("Enter client login: ");
+                        String enterLogin = scanner.nextLine();
+                        System.out.println("Choose currency for transfer: ");
+                        System.out.println("1. Som");
+                        System.out.println("2. Dollar");
+                        chooseCurrency = scanner.nextInt();
+                        scanner.nextLine();
+
+                        if(chooseCurrency == som){
+                            System.out.println("Enter amount of soms you want to transfer: ");
+                            somAmount = scanner.nextDouble();
+                            scanner.nextLine();
+                            clientDAO.transferCurrency(som, somAmount, client.getName(), enterLogin);
+                        }else if(chooseCurrency == dollar){
+                            System.out.println("Enter amount of dollars you want to transfer: ");
+                            dollarAmount = scanner.nextDouble();
+                            scanner.nextLine();
+                            clientDAO.transferCurrency(dollar, dollarAmount, client.getName(), enterLogin);
+                        }
                     case 5:
                         System.out.println("Exiting.");
                         finished = true;
