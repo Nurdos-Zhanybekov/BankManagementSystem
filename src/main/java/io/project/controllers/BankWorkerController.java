@@ -2,6 +2,7 @@ package io.project.controllers;
 
 import io.project.model.Client;
 import io.project.DAO.ClientDAO;
+import io.project.model.Credit;
 import io.project.model.User;
 import io.project.service.CreditLoan;
 
@@ -31,11 +32,9 @@ public class BankWorkerController {
                 int choose = scanner.nextInt();
 
                 scanner.nextLine();
-                int enter_response;
-                int answer_no = 2;
 
-                List<String> apartments;
-                List<Double> creditAmounts;
+                List<String> propertyTypes;
+                List<Double> creditPrices;
 
                 switch (choose) {
                     case 1:
@@ -44,74 +43,38 @@ public class BankWorkerController {
                         for (Client client : clients) {
                             System.out.println(client.getId() + ". " + client.getName());
                         }
-
-                        System.out.println("Do you wish to continue: ");
-                        System.out.println("1.Yes");
-                        System.out.println("2.No");
-                        enter_response = scanner.nextInt();
-                        scanner.nextLine();
-
-                        if(enter_response == answer_no){
-                            finished = true;
-                        }
                         break;
                     case 2:
-                        System.out.println("Please enter name of the client: ");
-                        String enteredLogin = scanner.nextLine();
-                        apartments = new ArrayList<>();
-                        creditAmounts = new ArrayList<>();
-                        Client searchedClient = clientDao.findClient(enteredLogin, apartments, creditAmounts);
+                        System.out.println("Please enter login of the client: ");
+                        String enterLogin = scanner.nextLine();
+                        propertyTypes = new ArrayList<>();
+                        creditPrices = new ArrayList<>();
+                        Client searchedClient = clientDao.findClient(enterLogin, propertyTypes, creditPrices);
                         System.out.println(searchedClient.getId() + ". " + searchedClient.getLogin());
                         System.out.println("Salary: " + searchedClient.getSalary());
                         System.out.println("Credits: ");
 
-                        for (int i = 0; i < apartments.size(); i++) {
-                            System.out.println((i + 1) + ". " + apartments.get(i) + "(" + creditAmounts.get(i) + "$)");
-                        }
-
-                        System.out.println("Do you wish to continue: ");
-                        System.out.println("1.Yes");
-                        System.out.println("2.No");
-                        enter_response = scanner.nextInt();
-                        scanner.nextLine();
-
-                        if(enter_response == answer_no){
-                            finished = true;
+                        for (int i = 0; i < propertyTypes.size(); i++) {
+                            System.out.println((i + 1) + ". " + propertyTypes.get(i) + "(" + creditPrices.get(i) + "$)");
                         }
                         break;
                     case 3:
                         Client maxCreditClient = clientDao.getMaxCreditClient();
+                        Credit maxCredit = clientDao.getMaxCredit();
                         System.out.println(maxCreditClient.getId() + ". " + maxCreditClient.getLogin());
-                        System.out.println("Credit amount: " + maxCreditClient.getCreditAmount());
-
-                        System.out.println("Do you wish to continue: ");
-                        System.out.println("1.Yes");
-                        System.out.println("2.No");
-                        enter_response = scanner.nextInt();
-                        scanner.nextLine();
-
-                        if(enter_response == answer_no){
-                            finished = true;
-                        }
+                        System.out.println("Credit amount: " + maxCredit.getPropertyPriceWithCredit());
                         break;
                     case 4:
                         Client minCreditClient = clientDao.getMinCreditClient();
+                        Credit minCredit = clientDao.getMinCredit();
                         System.out.println(minCreditClient.getId() + ". " + minCreditClient.getLogin());
-                        System.out.println("Credit amount: " + minCreditClient.getCreditAmount());
-
-                        System.out.println("Do you wish to continue: ");
-                        System.out.println("1.Yes");
-                        System.out.println("2.No");
-                        enter_response = scanner.nextInt();
-                        scanner.nextLine();
-
-                        if(enter_response == answer_no){
-                            finished = true;
-                        }
+                        System.out.println("Credit amount: " + minCredit.getPropertyPriceWithCredit());
                         break;
                     case 5:
                         System.out.println("Enter client name: ");
                         String clientName = scanner.nextLine();
+                        System.out.println("Enter client login: ");
+                        String clientLogin = scanner.nextLine();
                         System.out.println("Enter client salary: ");
                         double clientSalary = scanner.nextDouble();
                         scanner.nextLine();
@@ -124,48 +87,30 @@ public class BankWorkerController {
                         int creditPeriod = scanner.nextInt();
                         scanner.nextLine();
 
-                        Double creditSum = creditLoan.countCreditSum(propertyType, propertyPrice, creditPeriod, clientSalary);
+                        Double totalCredit = creditLoan.countCreditSum(propertyType, propertyPrice, creditPeriod, clientSalary);
 
-                        if (creditSum == null) {
+                        if (totalCredit == null) {
                             System.out.println("Client doesn't have enough income to get credit");
                             return;
                         }
 
-                        clientDao.addNewClient(clientName, clientSalary, propertyType, propertyPrice, creditPeriod, creditSum);
+                        clientDao.addNewClient(clientName, clientLogin, clientSalary);
+                        clientDao.addNewClientCredit(clientLogin, propertyType, propertyPrice, creditPeriod, totalCredit);
                         System.out.println("Client added successfully");
-
-                        System.out.println("Do you wish to continue: ");
-                        System.out.println("1.Yes");
-                        System.out.println("2.No");
-                        enter_response = scanner.nextInt();
-                        scanner.nextLine();
-
-                        if(enter_response == answer_no){
-                            finished = true;
-                        }
                         break;
                     case 6:
-                        System.out.println("Enter client name: ");
-                        String creditHistoryName = scanner.nextLine();
-                        apartments = new ArrayList<>();
-                        creditAmounts = new ArrayList<>();
-                        Client clientCreditHistory = clientDao.getCreditHistory(creditHistoryName, apartments, creditAmounts);
+                        System.out.println("Enter client login: ");
+                        String clientCreditHistoryLogin = scanner.nextLine();
+                        propertyTypes = new ArrayList<>();
+                        creditPrices = new ArrayList<>();
+                        Client clientCreditHistory = clientDao.getCreditHistoryClient(clientCreditHistoryLogin);
+                        Credit creditHistory = clientDao.getCreditHistory(clientCreditHistoryLogin, propertyTypes, creditPrices);
                         System.out.println(clientCreditHistory.getId() + ". " + clientCreditHistory.getName());
                         System.out.println("Credits: ");
-                        for (int i = 0; i < apartments.size(); i++) {
-                            System.out.println((i + 1) + ". " + apartments.get(i) + "(" + creditAmounts.get(i) + "$)");
+                        for (int i = 0; i < propertyTypes.size(); i++) {
+                            System.out.println((i + 1) + ". " + propertyTypes.get(i) + "(" + creditPrices.get(i) + "$)");
                         }
-                        System.out.println("Total sum: " + clientCreditHistory.getTotalCredit());
-
-                        System.out.println("Do you wish to continue: ");
-                        System.out.println("1.Yes");
-                        System.out.println("2.No");
-                        enter_response = scanner.nextInt();
-                        scanner.nextLine();
-
-                        if(enter_response == answer_no){
-                            finished = true;
-                        }
+                        System.out.println("Total sum: " + creditHistory.getTotalCredit());
                         break;
                     case 7:
                         System.out.println("Exiting");

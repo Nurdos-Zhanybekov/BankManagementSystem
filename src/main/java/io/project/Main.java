@@ -1,6 +1,5 @@
 package io.project;
 
-import io.project.config.DBConnection;
 import io.project.controllers.MainController;
 
 public class Main {

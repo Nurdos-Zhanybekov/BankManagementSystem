@@ -28,8 +28,6 @@ public class ClientController {
 
                 int chooseOption = scanner.nextInt();
                 scanner.nextLine();
-                int enterResponse;
-                int answer_no = 2;
 
                 int chooseCurrency;
                 int som = 1;
@@ -40,26 +38,17 @@ public class ClientController {
 
                 switch (chooseOption){
                     case 1:
-                        List<String> apartments = new ArrayList<>();
-                        List<Double> creditAmounts = new ArrayList<>();
-                        client = clientDAO.getCreditHistory(client.getName(), apartments, creditAmounts);
-                        System.out.println(client.getId() + ". " + client.getName());
-                        System.out.println("Credits: ");
-                        for (int i = 0; i < apartments.size(); i++) {
-                            System.out.println((i + 1) + ". " + apartments.get(i) + "(" + creditAmounts.get(i) + "$)");
-                        }
-                        System.out.println("Total sum: " + client.getTotalCredit());
-                        System.out.println();
-                        System.out.println("Do you wish to continue: ");
-                        System.out.println("1.Yes");
-                        System.out.println("2.No");
-                        enterResponse = scanner.nextInt();
-                        scanner.nextLine();
-
-                        if(enterResponse == answer_no){
-                            finished = true;
-                        }
-                        break;
+//                        List<String> apartments = new ArrayList<>();
+//                        List<Double> creditAmounts = new ArrayList<>();
+//                        client = clientDAO.getCreditHistory(client.getName(), apartments, creditAmounts);
+//                        System.out.println(client.getId() + ". " + client.getName());
+//                        System.out.println("Credits: ");
+//                        for (int i = 0; i < apartments.size(); i++) {
+//                            System.out.println((i + 1) + ". " + apartments.get(i) + "(" + creditAmounts.get(i) + "$)");
+//                        }
+//                        System.out.println("Total sum: " + client.getTotalCredit());
+//                        System.out.println();
+//                        break;
                     case 2:
                         System.out.println("1. Show balance in soms");
                         System.out.println("2. Show balance in dollars");
@@ -73,16 +62,6 @@ public class ClientController {
                         }else{
                             System.out.println("Your balance: " + balance + " dollars");
                         }
-
-                        System.out.println("Do you wish to continue: ");
-                        System.out.println("1.Yes");
-                        System.out.println("2.No");
-                        enterResponse = scanner.nextInt();
-                        scanner.nextLine();
-
-                        if(enterResponse == answer_no){
-                            finished = true;
-                        }
                         break;
                     case 3:
                         System.out.println("Choose currency which you want to obtain: ");
@@ -91,25 +70,15 @@ public class ClientController {
                         chooseCurrency = scanner.nextInt();
 
                         if(chooseCurrency == som){
+                            System.out.println("Enter amount of dollars you want to convert: ");
+                            dollarAmount = scanner.nextDouble();
+                            scanner.nextLine();
+                            clientDAO.buyCurrency(som, dollarAmount, client.getName());
+                        }else if(chooseCurrency == dollar){
                             System.out.println("Enter amount of soms you want to convert: ");
                             somAmount = scanner.nextDouble();
                             scanner.nextLine();
-                            clientDAO.buyCurrency(som, somAmount, client.getName());
-                        }else if(chooseCurrency == dollar){
-                            System.out.println("Enter amount of soms you want to convert: ");
-                            dollarAmount = scanner.nextDouble();
-                            scanner.nextLine();
-                            clientDAO.buyCurrency(dollar, dollarAmount, client.getName());
-                        }
-
-                        System.out.println("Do you wish to continue: ");
-                        System.out.println("1.Yes");
-                        System.out.println("2.No");
-                        enterResponse = scanner.nextInt();
-                        scanner.nextLine();
-
-                        if(enterResponse == answer_no){
-                            finished = true;
+                            clientDAO.buyCurrency(dollar, somAmount, client.getName());
                         }
                         break;
                     case 4:
@@ -132,6 +101,7 @@ public class ClientController {
                             scanner.nextLine();
                             clientDAO.transferCurrency(dollar, dollarAmount, client.getName(), enterLogin);
                         }
+                        break;
                     case 5:
                         System.out.println("Exiting.");
                         finished = true;
