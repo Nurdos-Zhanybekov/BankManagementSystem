@@ -12,7 +12,7 @@ public class DBConnection {
 
     public static Connection getConnection(){
         try{
-            if(connection == null){
+            if(connection == null || connection.isClosed()){
                 connection = DriverManager.getConnection(URL, username, password);
             }
         } catch (SQLException e) {

@@ -2,16 +2,20 @@ package io.project.model;
 
 public class Client extends User {
     private int id;
-    private String name;
+    private String login;
     private double salary;
     private double balance;
 
-    public Client(int id, String account_type, String login, String password) {
-        super(id, account_type, login, password);
-        this.name = login;
-    }
+    public Client() {}
 
-    public Client(){}
+
+    public Client(int id, String login, String name, double salary){
+        super();
+        setId(id);
+        setLogin(login);
+        setName(name);
+        this.salary = salary;
+    }
 
     public double getSalary() {
         return salary;
@@ -37,11 +41,11 @@ public class Client extends User {
         this.balance = balance;
     }
 
-    public String getName() {
-        return name;
+    public String getLogin() {
+        return login;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLogin(String login) {
+        this.login = login;
     }
 }

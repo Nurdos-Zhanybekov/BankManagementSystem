@@ -17,7 +17,7 @@ public class MainController {
             String enterLogin = scanner.nextLine();
             String enterPassword = scanner.nextLine();
 
-            var user = authentication.login(enterAccountType, enterLogin, enterPassword);
+            var user = authentication.authenticateUser(enterAccountType, enterLogin, enterPassword);
 
             if (user == null) {
                 System.out.println("User has not been found. Try again");

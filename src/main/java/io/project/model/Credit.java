@@ -15,7 +15,12 @@ public class Credit {
         this.totalCredit = totalCredit;
     }
 
-    public Credit(){}
+    public Credit(String propertyType, double propertyPrice, int creditPeriod, double propertyPriceWithCredit){
+        this.propertyType = propertyType;
+        this.propertyPrice = propertyPrice;
+        this.creditPeriod = creditPeriod;
+        this.propertyPriceWithCredit = propertyPriceWithCredit;
+    }
 
     public String getPropertyType() {
         return propertyType;

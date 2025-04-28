@@ -1,5 +1,7 @@
 package io.project.controllers;
 
+import io.project.DAO.BalanceDAO;
+import io.project.DAO.CreditDAO;
 import io.project.model.Client;
 import io.project.DAO.ClientDAO;
 import io.project.model.Credit;
@@ -13,6 +15,8 @@ import java.util.Scanner;
 
 public class BankWorkerController {
     private final ClientDAO clientDao = new ClientDAO();
+    private final CreditDAO creditDAO = new CreditDAO();
+    private final BalanceDAO balanceDAO = new BalanceDAO();
     private final Scanner scanner = new Scanner(System.in);
     private final CreditLoan creditLoan = new CreditLoan();
 
@@ -43,6 +47,7 @@ public class BankWorkerController {
                         for (Client client : clients) {
                             System.out.println(client.getId() + ". " + client.getName());
                         }
+                        scanner.nextLine();
                         break;
                     case 2:
                         System.out.println("Please enter login of the client: ");
@@ -50,31 +55,48 @@ public class BankWorkerController {
                         propertyTypes = new ArrayList<>();
                         creditPrices = new ArrayList<>();
                         Client searchedClient = clientDao.findClient(enterLogin, propertyTypes, creditPrices);
-                        System.out.println(searchedClient.getId() + ". " + searchedClient.getLogin());
-                        System.out.println("Salary: " + searchedClient.getSalary());
-                        System.out.println("Credits: ");
 
-                        for (int i = 0; i < propertyTypes.size(); i++) {
-                            System.out.println((i + 1) + ". " + propertyTypes.get(i) + "(" + creditPrices.get(i) + "$)");
+                        if(searchedClient == null){
+                            System.out.println("Couldn't find the client");
+                        }else {
+                            System.out.println(searchedClient.getId() + ". " + searchedClient.getLogin());
+                            System.out.println("Current balance: " + searchedClient.getBalance());
+                            System.out.println("Salary: " + searchedClient.getSalary());
+                            System.out.println("Credits: ");
+
+                            for (int i = 0; i < propertyTypes.size(); i++) {
+                                System.out.println((i + 1) + ". " + propertyTypes.get(i) + "(" + creditPrices.get(i) + "$)");
+                            }
                         }
+
+                        scanner.nextLine();
                         break;
                     case 3:
-                        Client maxCreditClient = clientDao.getMaxCreditClient();
-                        Credit maxCredit = clientDao.getMaxCredit();
+                        Client maxCreditClient = creditDAO.getMaxCreditClient();
+                        Credit maxCredit = creditDAO.getMaxCredit();
                         System.out.println(maxCreditClient.getId() + ". " + maxCreditClient.getLogin());
                         System.out.println("Credit amount: " + maxCredit.getPropertyPriceWithCredit());
+                        scanner.nextLine();
                         break;
                     case 4:
-                        Client minCreditClient = clientDao.getMinCreditClient();
-                        Credit minCredit = clientDao.getMinCredit();
+                        Client minCreditClient = creditDAO.getMinCreditClient();
+                        Credit minCredit = creditDAO.getMinCredit();
                         System.out.println(minCreditClient.getId() + ". " + minCreditClient.getLogin());
                         System.out.println("Credit amount: " + minCredit.getPropertyPriceWithCredit());
+                        scanner.nextLine();
                         break;
                     case 5:
                         System.out.println("Enter client name: ");
-                        String clientName = scanner.nextLine();
+                        String enterClientName = scanner.nextLine();
                         System.out.println("Enter client login: ");
-                        String clientLogin = scanner.nextLine();
+                        String enterClientLogin = scanner.nextLine();
+
+                        System.out.println("Choose currency for client's balance: ");
+                        int chooseCurrency = scanner.nextInt();
+                        scanner.nextLine();
+                        System.out.println("Enter client's current balance: ");
+                        double enterClientBalance = scanner.nextDouble();
+                        scanner.nextLine();
                         System.out.println("Enter client salary: ");
                         double clientSalary = scanner.nextDouble();
                         scanner.nextLine();
@@ -94,23 +116,31 @@ public class BankWorkerController {
                             return;
                         }
 
-                        clientDao.addNewClient(clientName, clientLogin, clientSalary);
-                        clientDao.addNewClientCredit(clientLogin, propertyType, propertyPrice, creditPeriod, totalCredit);
+                        creditDAO.addNewClient(enterClientName, enterClientLogin, clientSalary);
+                        creditDAO.addNewClientCredit(enterClientLogin, propertyType, propertyPrice, creditPeriod, totalCredit);
+                        balanceDAO.addNewClientBalance(enterClientLogin, chooseCurrency, enterClientBalance);
                         System.out.println("Client added successfully");
+                        scanner.nextLine();
                         break;
                     case 6:
                         System.out.println("Enter client login: ");
                         String clientCreditHistoryLogin = scanner.nextLine();
                         propertyTypes = new ArrayList<>();
                         creditPrices = new ArrayList<>();
-                        Client clientCreditHistory = clientDao.getCreditHistoryClient(clientCreditHistoryLogin);
-                        Credit creditHistory = clientDao.getCreditHistory(clientCreditHistoryLogin, propertyTypes, creditPrices);
-                        System.out.println(clientCreditHistory.getId() + ". " + clientCreditHistory.getName());
-                        System.out.println("Credits: ");
-                        for (int i = 0; i < propertyTypes.size(); i++) {
-                            System.out.println((i + 1) + ". " + propertyTypes.get(i) + "(" + creditPrices.get(i) + "$)");
+                        Client clientCreditHistory = creditDAO.getCreditHistoryClient(clientCreditHistoryLogin);
+                        Credit creditHistory = creditDAO.getCreditHistory(clientCreditHistoryLogin, propertyTypes, creditPrices);
+
+                        if(clientCreditHistory == null || creditHistory == null){
+                            System.out.println("Couldn't find the client");
+                        }else {
+                            System.out.println(clientCreditHistory.getId() + ". " + clientCreditHistory.getName());
+                            System.out.println("Credits: ");
+                            for (int i = 0; i < propertyTypes.size(); i++) {
+                                System.out.println((i + 1) + ". " + propertyTypes.get(i) + "(" + creditPrices.get(i) + "$)");
+                            }
+                            System.out.println("Total sum: " + creditHistory.getTotalCredit());
                         }
-                        System.out.println("Total sum: " + creditHistory.getTotalCredit());
+                        scanner.nextLine();
                         break;
                     case 7:
                         System.out.println("Exiting");

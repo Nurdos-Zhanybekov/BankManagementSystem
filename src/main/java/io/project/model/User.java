@@ -4,6 +4,7 @@ public class User {
     private String account_type;
     private String password;
     private String login;
+    private String name;
     private int id;
 
     public User(int id, String account_type, String login, String password) {
@@ -44,5 +45,13 @@ public class User {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
