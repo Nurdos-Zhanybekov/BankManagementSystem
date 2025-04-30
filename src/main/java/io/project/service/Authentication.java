@@ -47,9 +47,8 @@ public class Authentication {
             if (rs.next()) {
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
-                double salary = rs.getDouble("salary");
 
-                return new Client(id, login, name, salary);
+                return new Client(id, login, name);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error fetching full client data", e);

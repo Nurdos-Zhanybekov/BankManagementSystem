@@ -3,26 +3,18 @@ package io.project.model;
 public class Client extends User {
     private int id;
     private String login;
-    private double salary;
-    private double balance;
+    private double salarySom;
+    private double salaryDollar;
+    private double balanceSom;
+    private double balanceDollar;
 
     public Client() {}
 
-
-    public Client(int id, String login, String name, double salary){
+    public Client(int id, String login, String name){
         super();
         setId(id);
         setLogin(login);
         setName(name);
-        this.salary = salary;
-    }
-
-    public double getSalary() {
-        return salary;
-    }
-
-    public void setSalary(double salary) {
-        this.salary = salary;
     }
 
     public int getId() {
@@ -33,19 +25,43 @@ public class Client extends User {
         this.id = id;
     }
 
-    public double getBalance() {
-        return balance;
-    }
-
-    public void setBalance(double balance) {
-        this.balance = balance;
-    }
-
     public String getLogin() {
         return login;
     }
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public double getBalanceSom() {
+        return balanceSom;
+    }
+
+    public void setBalanceSom(double balanceSom) {
+        this.balanceSom = balanceSom;
+    }
+
+    public double getBalanceDollar() {
+        return balanceDollar;
+    }
+
+    public void setBalanceDollar(double balanceDollar) {
+        this.balanceDollar = balanceDollar;
+    }
+
+    public double getSalarySom() {
+        return salarySom;
+    }
+
+    public void setSalarySom(double salarySom) {
+        this.salarySom = salarySom;
+    }
+
+    public double getSalaryDollar() {
+        return salaryDollar;
+    }
+
+    public void setSalaryDollar(double salaryDollar) {
+        this.salaryDollar = salaryDollar;
     }
 }

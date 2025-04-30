@@ -17,8 +17,8 @@ public class BankWorkerController {
     private final ClientDAO clientDao = new ClientDAO();
     private final CreditDAO creditDAO = new CreditDAO();
     private final BalanceDAO balanceDAO = new BalanceDAO();
-    private final Scanner scanner = new Scanner(System.in);
     private final CreditLoan creditLoan = new CreditLoan();
+    private final Scanner scanner = new Scanner(System.in);
 
     public void getMenu(User user) {
         System.out.println("Welcome " + user.getLogin());
@@ -59,9 +59,12 @@ public class BankWorkerController {
                         if(searchedClient == null){
                             System.out.println("Couldn't find the client");
                         }else {
-                            System.out.println(searchedClient.getId() + ". " + searchedClient.getLogin());
-                            System.out.println("Current balance: " + searchedClient.getBalance());
-                            System.out.println("Salary: " + searchedClient.getSalary());
+                            System.out.println(searchedClient.getId() + ". " + searchedClient.getName());
+                            System.out.println("Current balance in som: " + searchedClient.getBalanceSom());
+                            System.out.println("Current balance in dollar: " + searchedClient.getBalanceDollar());
+
+                            System.out.println("Salary in som: " + searchedClient.getSalarySom());
+                            System.out.println("Salary in dollar: " + searchedClient.getSalaryDollar());
                             System.out.println("Credits: ");
 
                             for (int i = 0; i < propertyTypes.size(); i++) {
@@ -74,14 +77,14 @@ public class BankWorkerController {
                     case 3:
                         Client maxCreditClient = creditDAO.getMaxCreditClient();
                         Credit maxCredit = creditDAO.getMaxCredit();
-                        System.out.println(maxCreditClient.getId() + ". " + maxCreditClient.getLogin());
+                        System.out.println(maxCreditClient.getId() + ". " + maxCreditClient.getName());
                         System.out.println("Credit amount: " + maxCredit.getPropertyPriceWithCredit());
                         scanner.nextLine();
                         break;
                     case 4:
                         Client minCreditClient = creditDAO.getMinCreditClient();
                         Credit minCredit = creditDAO.getMinCredit();
-                        System.out.println(minCreditClient.getId() + ". " + minCreditClient.getLogin());
+                        System.out.println(minCreditClient.getId() + ". " + minCreditClient.getName());
                         System.out.println("Credit amount: " + minCredit.getPropertyPriceWithCredit());
                         scanner.nextLine();
                         break;
@@ -90,38 +93,52 @@ public class BankWorkerController {
                         String enterClientName = scanner.nextLine();
                         System.out.println("Enter client login: ");
                         String enterClientLogin = scanner.nextLine();
+                        System.out.println("Enter client password: ");
+                        String enterPassword = scanner.nextLine();
+                        System.out.println("Choose currency for client's salary: ");
+                        System.out.println("1. Som");
+                        System.out.println("2. Dollar");
+                        System.out.println("Enter client salary: ");
+                        double enteredSalary = scanner.nextDouble();
+                        scanner.nextLine();
 
                         System.out.println("Choose currency for client's balance: ");
-                        int chooseCurrency = scanner.nextInt();
-                        scanner.nextLine();
+                        System.out.println("1. Som");
+                        System.out.println("2. Dollar");
+                        int balanceCurrency = scanner.nextInt();
                         System.out.println("Enter client's current balance: ");
-                        double enterClientBalance = scanner.nextDouble();
+                        double enteredBalance = scanner.nextDouble();
                         scanner.nextLine();
-                        System.out.println("Enter client salary: ");
-                        double clientSalary = scanner.nextDouble();
-                        scanner.nextLine();
+
                         System.out.println("Enter property type: ");
+                        System.out.println("Apartment");
+                        System.out.println("Car");
+                        System.out.println("Other");
                         String propertyType = scanner.nextLine();
-                        System.out.println("Enter property price: ");
-                        double propertyPrice = scanner.nextDouble();
+                        System.out.println("Enter property price(in dollars) : ");
+                        double enteredPropertyPrice = scanner.nextDouble();
                         scanner.nextLine();
-                        System.out.println("Enter credit period: ");
+
+                        System.out.println("Enter credit period (months): ");
                         int creditPeriod = scanner.nextInt();
                         scanner.nextLine();
 
-                        Double totalCredit = creditLoan.countCreditSum(propertyType, propertyPrice, creditPeriod, clientSalary);
+                        Double totalCredit = creditLoan.countCreditSum(propertyType, enteredPropertyPrice, creditPeriod, enteredSalary);
 
                         if (totalCredit == null) {
                             System.out.println("Client doesn't have enough income to get credit");
-                            return;
+                            scanner.nextLine();
+                            break;
                         }
 
-                        creditDAO.addNewClient(enterClientName, enterClientLogin, clientSalary);
-                        creditDAO.addNewClientCredit(enterClientLogin, propertyType, propertyPrice, creditPeriod, totalCredit);
-                        balanceDAO.addNewClientBalance(enterClientLogin, chooseCurrency, enterClientBalance);
+                        creditDAO.addNewClient(enterClientName, enterClientLogin, enteredSalary);
+                        creditDAO.addNewUser("client", enterClientLogin, enterPassword);
+                        creditDAO.addNewClientCredit(enterClientLogin, propertyType, enteredPropertyPrice, creditPeriod, totalCredit);
+                        balanceDAO.addNewClientBalance(enterClientLogin, balanceCurrency, enteredBalance);
                         System.out.println("Client added successfully");
                         scanner.nextLine();
                         break;
+
                     case 6:
                         System.out.println("Enter client login: ");
                         String clientCreditHistoryLogin = scanner.nextLine();

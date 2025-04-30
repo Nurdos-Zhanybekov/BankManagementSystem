@@ -12,8 +12,6 @@ import java.util.List;
 
 public class ClientDAO {
 
-    private static final int SOM = 1;
-
     public List<Client> getClientList() {
         String query = "SELECT * FROM clients";
         List<Client> clients = new ArrayList<>();
@@ -23,12 +21,10 @@ public class ClientDAO {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                clients.add(new Client(
-                        rs.getInt("id"),
-                        rs.getString("login"),
-                        rs.getString("name"),
-                        rs.getDouble("salary")
-                ));
+                Client client = new Client();
+                client.setId(rs.getInt("id"));
+                client.setName(rs.getString("name"));
+                clients.add(client);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error fetching client list", e);
@@ -41,7 +37,7 @@ public class ClientDAO {
         Client client = new Client();
         String clientQuery = "SELECT * FROM clients WHERE login = ?";
         String creditsQuery = "SELECT property_type, property_price_with_credit FROM credits WHERE client_login = ?";
-        String balanceQuery = "SELECT balance_som FROM balance WHERE client_login = ?";
+        String balanceQuery = "SELECT balance_som, balance_dollar FROM balance WHERE client_login = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement clientPS = conn.prepareStatement(clientQuery);
@@ -62,13 +58,15 @@ public class ClientDAO {
                 }
 
                 if(balanceRS.next()){
-                    client.setBalance(balanceRS.getDouble("balance_som"));
+                    client.setBalanceSom(balanceRS.getDouble("balance_som"));
+                    client.setBalanceDollar(balanceRS.getDouble("balance_dollar"));
                 }
 
                 if (clientRS.next()) {
                     client.setId(clientRS.getInt("id"));
                     client.setName(clientRS.getString("name"));
-                    client.setSalary(clientRS.getDouble("salary_som"));
+                    client.setSalarySom(clientRS.getDouble("salary_som"));
+                    client.setSalaryDollar(clientRS.getDouble("salary_dollar"));
                     client.setLogin(clientRS.getString("login"));
                     return client;
                 }

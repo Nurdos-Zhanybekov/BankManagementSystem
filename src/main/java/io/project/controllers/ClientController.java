@@ -1,7 +1,6 @@
 package io.project.controllers;
 
 import io.project.DAO.BalanceDAO;
-import io.project.DAO.ClientDAO;
 import io.project.DAO.CreditDAO;
 import io.project.model.Client;
 import io.project.model.Credit;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ClientController {
-    private final ClientDAO clientDAO = new ClientDAO();
     private final CreditDAO creditDAO = new CreditDAO();
     private final BalanceDAO balanceDAO = new BalanceDAO();
 
@@ -52,13 +50,11 @@ public class ClientController {
                             System.out.println((i + 1) + ". " + propertyTypes.get(i) + "(" + creditPrices.get(i) + "$)");
                         }
                         System.out.println("Total sum: " + credit.getTotalCredit());
-                        System.out.println();
                         scanner.nextLine();
                         break;
                     case 2:
                         System.out.println("1. Show balance in soms");
                         System.out.println("2. Show balance in dollars");
-                        System.out.println(client.getLogin());
                         chooseCurrency = scanner.nextInt();
                         scanner.nextLine();
 
@@ -78,15 +74,17 @@ public class ClientController {
                         chooseCurrency = scanner.nextInt();
 
                         if(chooseCurrency == som){
-                            System.out.println("Enter amount of dollars you want to convert: ");
-                            dollarAmount = scanner.nextDouble();
-                            scanner.nextLine();
-                            balanceDAO.buyCurrency(som, dollarAmount, client.getName());
-                        }else if(chooseCurrency == dollar){
-                            System.out.println("Enter amount of soms you want to convert: ");
+                            System.out.println("Enter amount of soms you want to buy: ");
                             somAmount = scanner.nextDouble();
                             scanner.nextLine();
-                            balanceDAO.buyCurrency(dollar, somAmount, client.getName());
+                            balanceDAO.buyCurrency(som, somAmount, client.getLogin());
+                            System.out.println("Currency bought successfully");
+                        }else if(chooseCurrency == dollar){
+                            System.out.println("Enter amount of dollars you want to buy: ");
+                            dollarAmount = scanner.nextDouble();
+                            scanner.nextLine();
+                            balanceDAO.buyCurrency(dollar, dollarAmount, client.getLogin());
+                            System.out.println("Currency bought successfully");
                         }
                         scanner.nextLine();
                         break;
@@ -103,12 +101,12 @@ public class ClientController {
                             System.out.println("Enter amount of soms you want to transfer: ");
                             somAmount = scanner.nextDouble();
                             scanner.nextLine();
-                            balanceDAO.transferCurrency(som, somAmount, client.getName(), enterLogin);
+                            balanceDAO.transferCurrency(som, somAmount, client.getLogin(), enterLogin);
                         }else if(chooseCurrency == dollar){
                             System.out.println("Enter amount of dollars you want to transfer: ");
                             dollarAmount = scanner.nextDouble();
                             scanner.nextLine();
-                            balanceDAO.transferCurrency(dollar, dollarAmount, client.getName(), enterLogin);
+                            balanceDAO.transferCurrency(dollar, dollarAmount, client.getLogin(), enterLogin);
                         }
                         scanner.nextLine();
                         break;
